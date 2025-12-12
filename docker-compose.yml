@@ -1,0 +1,33 @@
+services:
+  # Service 1: The Brain (FastAPI Backend)
+  backend:
+    build: .
+    container_name: iot_backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env  # Passes your Supabase credentials
+
+  # Service 2: The Monitor (Streamlit Dashboard)
+  dashboard:
+    build: .
+    container_name: iot_dashboard
+    command: streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+  # Service 3: The Factory (Simulator)
+  simulator:
+    build: .
+    container_name: iot_simulator
+    # We override the API URL to point to the internal docker name 'backend'
+    environment:
+      - API_URL=http://backend:8000/ingest
+    command: python simulate_fleet.py
+    depends_on:
+      - backend

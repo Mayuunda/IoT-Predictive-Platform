@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+supabase
+pydantic
+python-dotenv
+streamlit
+pandas
+plotly
+scikit-learn
+requests
